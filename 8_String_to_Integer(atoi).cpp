@@ -46,6 +46,7 @@
 
 class Solution {
 public:
+     //84.9%
     int myAtoi(string str) {
         //符号位
         int posi=true;
