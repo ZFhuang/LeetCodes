@@ -63,28 +63,4 @@ public:
         }
         return ret;
     }
-    
-    //优化的链表计算，99.24%
-    //主要是通过更加极致的编写手法来优化代码的执行，减少了很多判断
-    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-        ListNode dummy(0);
-        auto p1=l1,p2=l2, q=&dummy;
-        int carry=0;
-        //当链表中有任何一个未完或还有进位时
-        while(p1||p2||carry){
-            //使用三目运算符简化代码，这个写法非常漂亮
-            //取出链表当前对应元素的值(无则取0)相加再与进位相加
-            auto temp = (p1?p1->val:0)+(p2?p2->val:0)+carry;
-            //得到的值除10得到其十位部分成为新的进位
-            carry=temp/10;
-            //结果链表的新节点的值则是和值的个位部分
-            q->next=new ListNode(temp%10);
-            //三个链表前进，其中用if轻松解决空链表前进的问题
-            q=q->next;
-            if(p1)p1=p1->next;
-            if(p2)p2=p2->next;
-        }
-        //最后返回结果链表
-        return dummy.next;
-    }
 };
