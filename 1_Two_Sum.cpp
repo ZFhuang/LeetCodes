@@ -56,7 +56,8 @@ public:
     }
     */
     
-    //使用unordered_map，这是使用hashtable实现的，map是用红黑树实现的
+    //使用unordered_map,96.5%
+    //这是使用hashtable实现的，map是用红黑树实现的
     //多次查询时应该选用unordered_map，但单次查询时map可以确保良好的最坏情况运行时间
     vector<int> twoSum(vector<int>& nums, int target) {
         unordered_map<int,int> m;
