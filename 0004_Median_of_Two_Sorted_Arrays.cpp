@@ -19,15 +19,6 @@ nums2 = [3, 4]
 则中位数是 (2 + 3)/2 = 2.5
 */
 
-#include<vector>
-#include<iostream>
-using namespace std;
-
-int main() {
-    Solution s;
-    cout << s.findMedianSortedArrays({ 1,2 }, { 3,4 });
-}
-
 class Solution {
 public:
     double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
