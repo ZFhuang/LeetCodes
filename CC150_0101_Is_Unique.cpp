@@ -35,4 +35,21 @@ public:
         }
         return true;
     }
+
+    //不使用额外的数据结构, 60.6%
+    //用位运算来代替数组，测试（问面试官）得知字符来自a-z
+    bool isUnique(string astr) {
+        //用int来标识字母情况
+        int unique = 0;
+        int mask;
+        for (char& c : astr) {
+            //移位制造掩码
+            mask = 1 << (c - 'a');
+            if (unique & mask)
+                return false;
+            else
+                unique |= mask;
+        }
+        return true;
+    }
 };
