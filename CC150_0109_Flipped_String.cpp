@@ -40,7 +40,7 @@ public:
 		//检测是否存在
 		string s = s2 + s2;
 		//记得缩小搜索范围
-		for (int i = 0; i < s.size()-s1.size(); ++i) {
+		for (int i = 0; i < s.size() - s1.size(); ++i) {
 			if (checkSame(s1, s, i))
 				return true;
 		}
@@ -58,7 +58,10 @@ public:
 
 	//不调用内部函数但进行内部匹配，92.1%,8ms
 	//进行字符串匹配，使用KMP算法
-	bool isFlipedString(string s1, string s2) {
+	//KMP算法来自：
+	//如何更好的理解和掌握 KMP 算法? - 海纳的回答 - 知乎
+	​//https://www.zhihu.com/question/21923021/answer/281346746
+		bool isFlipedString(string s1, string s2) {
 		if (s1.size() != s2.size())
 			return false;
 		if (s1.size() < 2)
