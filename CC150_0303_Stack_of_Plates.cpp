@@ -24,9 +24,15 @@
 */
 
 class Solution {
+    //不使用STL，设置空闲链表，93.0%,60ms
+    //每个栈都是双向链表方便操作
+    //删除空栈时改为将空栈存入空闲链表中
+    //申请栈时先尝试从空闲链表分配，加速内存分配
+    //可以再给空闲链表增加阈值减少无用内存的占用
 private:
     struct PlateStack {
         int* stack;
+        //双向链表方便操作
         PlateStack* next = NULL;
         PlateStack* prev = NULL;
         int cur = 0;
@@ -35,8 +41,11 @@ private:
         }
     };
 
+    //在用栈表头
     PlateStack* use;
+    //栈表尾
     PlateStack* now;
+    //空闲栈表
     PlateStack* del;
     int cap;
 
@@ -49,20 +58,30 @@ public:
     }
 
     void push(int val) {
+        //特殊情况跳出
+        if (cap == 0) {
+            return;
+        }
+        //当指针达到栈尾时申请新栈
         if (now->cur == cap) {
             newNow();
         }
+        //存入
         now->stack[now->cur] = val;
         ++now->cur;
     }
 
     int pop() {
+        //当试图出栈一个空栈时
         if (now->cur == 0) {
+            //删除并检测是否已经没有元素了
             if (!delStk(now))
                 return -1;
         }
+        //出栈
         --now->cur;
         int ret = now->stack[now->cur];
+        //出栈后若栈空则删除栈
         if (now->cur == 0) {
             delStk(now);
         }
@@ -70,6 +89,8 @@ public:
     }
 
     int popAt(int index) {
+        //从头遍历所需序号的栈
+        //这部分可以利用双向链表的特性，储存左右两边的栈数量进行加速搜索
         PlateStack* find = use;
         for (int i = 0; i < index; i++) {
             if (find == NULL) {
@@ -78,15 +99,16 @@ public:
             find = find->next;
         }
 
+        //找不到栈时报错
         if (find == NULL) {
             return -1;
         }
 
+        //以下类似pop
         if (find->cur == 0) {
             if (!delStk(find))
                 return -1;
         }
-
         --find->cur;
         int ret = find->stack[find->cur];
         if (find->cur == 0) {
@@ -95,8 +117,11 @@ public:
         return ret;
     }
 
+    //新建栈
     void newNow() {
+        //当空闲链表非空时
         if (del != NULL) {
+            //将空闲链表头取一个作为新栈
             now->next = del;
             del->prev = now;
             del = del->next;
@@ -104,6 +129,7 @@ public:
             now->next = NULL;
         }
         else {
+            //否则新建
             now->next = new PlateStack(cap);
             now->next->prev = now;
             now = now->next;
@@ -112,32 +138,34 @@ public:
     }
 
     bool delStk(PlateStack* tar) {
+        //当目标栈是唯一栈时，表示全空
         if (!tar || tar->next == NULL && tar->prev == NULL) {
             return false;
         }
 
+        //存在下一个栈时
         if (tar->next) {
+            //存在上一个栈时
             if (tar->prev) {
+                //通过指针重指跳过当前栈
                 tar->prev->next = tar->next;
                 tar->next->prev = tar->prev;
             }
             else {
+                //只有下一个栈时，此时必然是use栈，也即是栈表头
+                //更改链表的同时需要改变use的位置
                 tar->next->prev = NULL;
-            }
-            if (now == tar) {
-                now = tar->next;
-                if (use == tar) {
-                    use = tar->next;
-                }
+                use = tar->next;
             }
         }
         else {
+            //没有下一个栈时，此时必然是now栈，也即是栈表尾
+            //更改链表的同时需要改变now的位置
             tar->prev->next = NULL;
-            if (now == tar) {
-                now = tar->prev;
-            }
+            now = tar->prev;
         }
 
+        //重整完链表后，类似new操作将腾出来的栈放到空闲链表头
         if (del != NULL) {
             tar->next = del;
             del->prev = tar;
@@ -152,4 +180,60 @@ public:
 
         return true;
     }
+
+    //样例的使用STL的方法，94.6%,56ms
+    //使用已经写好的容器能简化代码
+public:
+    StackOfPlates(int cap) {
+        len = cap;
+    }
+
+    void push(int val) {
+        if (len == 0) {
+            return;
+        }
+        //栈表空或当前到达栈尾时
+        if (rec.size() == 0 || rec[rec.size() - 1].size() == len) {
+            //新建栈并压入数据再压入链表
+            stack<int> s;
+            s.push(val);
+            rec.push_back(s);
+        }
+        else {
+            //直接压入
+            rec[rec.size() - 1].push(val);
+        }
+    }
+
+    int pop() {
+        //栈表非空时
+        if (rec.size() != 0) {
+            int r = rec[rec.size() - 1].top();
+            rec[rec.size() - 1].pop();
+            //若当前栈空，则弹出栈
+            if (rec[rec.size() - 1].empty()) {
+                rec.pop_back();
+            }
+            return r;
+        }
+        return -1;
+    }
+
+    int popAt(int index) {
+        //检测是否序号在链表中
+        if (index < rec.size()) {
+            //直接用下标访问
+            int r = rec[index].top();
+            rec[index].pop();
+            if (rec[index].empty()) {
+                rec.erase(rec.begin() + index);
+            }
+            return r;
+        }
+        return -1;
+    }
+private:
+    //栈向量嵌套容器
+    vector<stack<int>> rec;
+    int len = 0;
 };
