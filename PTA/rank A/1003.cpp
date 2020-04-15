@@ -40,8 +40,59 @@ NO
 #include<string>
 using namespace std;
 
+// 核心是计录PAT的数量，并且有一点点的阶段限制
+// 关键的理解是aPbATac中结尾ac的字符数量要等于开头a和中间bA的乘积
 int main() {
-    string input, output;
-    cin >> input;
-    cout << output << endl;
+    int num;
+    cin >> num;
+    while (num--)
+    {
+        string input;
+        cin >> input;
+        auto iter = input.begin();
+        int a = 0, b = 0, c = 0,p=0,t=0;
+        while (iter!=input.end())
+        {
+            if (*iter == 'P') {
+                if (p != 0) {
+                    goto NOEND;
+                }
+                ++p;
+            }
+            else if (*iter == 'A') {
+                if (p == 0) {
+                    ++a;
+                }
+                else if (t == 0) {
+                    ++b;
+                }
+                else {
+                    ++c;
+                }
+            }
+            else if (*iter == 'T') {
+                if (t != 0) {
+                    goto NOEND;
+                }
+                ++t;
+            }
+            else {
+                goto NOEND;
+            }
+
+            ++iter;
+        }
+
+        // 最关键部分
+        if (a * b != c || b == 0 || p == 0 || t == 0) {
+            goto NOEND;
+        }
+
+// YESEND:
+        cout << "YES" << endl;
+        continue;
+
+NOEND:
+        cout << "NO" << endl;
+    }
 }
