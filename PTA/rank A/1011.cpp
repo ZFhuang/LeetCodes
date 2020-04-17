@@ -14,8 +14,6 @@
 2147483647 0 2147483646
 0 -2147483648 -2147483647
 
-
-
 输出样例：
 Case #1: false
 Case #2: true
@@ -27,8 +25,26 @@ Case #4: false
 #include<string>
 using namespace std;
 
+// 尽管用long可以轻松解决，但是这里故意进行溢出判断来用int解决
 int main() {
-    string input, output;
-    cin >> input;
-    cout << output << endl;
+    int num;
+    cin >> num;
+    for (int i = 1; i <= num; i++) {
+        cout << "Case #" << to_string(i) << ": ";
+        int A, B, C;
+        cin >> A >> B >> C;
+        int D = A + B;
+        if (A > 0 && B > 0 && D < 0) {
+            cout << "true" << endl;
+        }
+        else if (A < 0 && B < 0 && D > 0) {
+            cout << "false" << endl;
+        }
+        else if (D > C) {
+            cout << "true" << endl;
+        }
+        else {
+            cout << "false" << endl;
+        }
+    }
 }
