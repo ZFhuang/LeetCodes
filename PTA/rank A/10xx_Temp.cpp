@@ -7,7 +7,5 @@
 using namespace std;
 
 int main() {
-    string input, output;
-    cin >> input;
-    cout << output << endl;
+	return 0;
 }
