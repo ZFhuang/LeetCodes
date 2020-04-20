@@ -45,8 +45,93 @@
 
 #include<iostream>
 #include<string>
+#include<list>
+#include<algorithm>
 using namespace std;
 
+// 储存学生信息的结构
+class Data {
+public:
+	// 记得写构造函数
+	Data(string id, int de, int cai) {
+		this->id = id;
+		this->de = de;
+		this->cai = cai;
+	}
+	string id;
+	int de;
+	int cai;
+};
+
+// 自定义几个排序器
+bool idSmaller(const Data& a, const Data& b) {
+	// 注意id的排序顺序是相反的
+	return a.id < b.id;
+}
+
+bool deLarger(const Data& a, const Data& b) {
+	return a.de > b.de;
+}
+
+bool sumLarger(const Data& a, const Data& b) {
+	return (a.de + a.cai) > (b.de + b.cai);
+}
+
 int main() {
+	// 优化大量数据的输入输出防止超时
+	static auto speedup = []() {ios::sync_with_stdio(false); cin.tie(nullptr); return nullptr; }();
+
+	int N, L, H;
+	cin >> N >> L >> H;
+	list<Data> list[4];
+	int count = 0;
+
+	// partition
+	while (N--)
+	{
+		string id;
+		int de;
+		int cai;
+		cin >> id >> de >> cai;
+		if (de >= L && cai >= L) {
+			++count;
+			if (cai >= H && de >= H) {
+				list[0].emplace_back(id, de, cai);
+			}
+			else if (cai < H && de >= H) {
+				list[1].emplace_back(id, de, cai);
+			}
+			else if (cai < H && de < H && de >= cai) {
+				list[2].emplace_back(id, de, cai);
+			}
+			else {
+				list[3].emplace_back(id, de, cai);
+			}
+		}
+	}
+
+	// sort
+	for (int i = 0; i < 4; ++i) {
+		// 用list的成员函数来排序
+		list[i].sort(idSmaller);
+		list[i].sort(deLarger);
+		list[i].sort(sumLarger);
+		// 下面的写法由于stl的sort不支持非随机访问的容器，所以不能编译通过(尽管VS的编译器可以处理)
+		//stable_sort(list[i].begin(), list[i].end(), idSmaller);
+		//stable_sort(list[i].begin(), list[i].end(), deLarger);
+		//stable_sort(list[i].begin(), list[i].end(), sumLarger);
+	}
+
+	// output
+	cout << count << endl;
+	for (int i = 0; i < 4; ++i) {
+		auto iter = list[i].cbegin();
+		while (iter != list[i].cend())
+		{
+			cout << iter->id << " " << iter->de << " " << iter->cai << endl;
+			++iter;
+		}
+	}
+
 	return 0;
 }
