@@ -30,9 +30,111 @@ B B
 #include<iostream>
 using namespace std;
 
+// 0 fool, 1 A, 2 B
+int whoWin(char A, char B) {
+	if (A == B) {
+		return 0;
+	}
+	if (A == 'C') {
+		if (B == 'J') {
+			return 1;
+		}
+		else {
+			return 2;
+		}
+	}
+	else if (A == 'J') {
+		if (B == 'B') {
+			return 1;
+		}
+		else {
+			return 2;
+		}
+	}
+	else if (A == 'B') {
+		if (B == 'C') {
+			return 1;
+		}
+		else {
+			return 2;
+		}
+	}
+}
+
 int main() {
 	int N;
 	cin >> N;
+	// B=0, C=1, J=2
+	int WinA[3] = { 0 };
+	int WinB[3] = { 0 };
+	for (int i = 0; i < N; ++i) {
+		char A, B;
+		cin >> A >> B;
+		if (whoWin(A, B) == 1) {
+			if (A == 'B') {
+				++WinA[0];
+			}
+			else if (A == 'C') {
+				++WinA[1];
+			}
+			else {
+				++WinA[2];
+			}
+		}
+		else if (whoWin(A, B) == 2) {
+			if (B == 'B') {
+				++WinB[0];
+			}
+			else if (B == 'C') {
+				++WinB[1];
+			}
+			else {
+				++WinB[2];
+			}
+		}
+	}
+
+	// 1, 2
+	int sumA = 0, sumB = 0, sumFool = 0;
+	for (int i = 0; i < 3; ++i) {
+		sumA += WinA[i];
+		sumB += WinB[i];
+	}
+	sumFool = N - sumA - sumB;
+	cout << sumA << " " << sumFool << " " << sumB << endl;
+	cout << sumB << " " << sumFool << " " << sumA << endl;
+
+	// 3
+	int bestA = 0, bestB = 0, idxA = 0, idxB = 0;
+	for (int i = 0; i < 3; ++i) {
+		if (WinA[i] > bestA) {
+			bestA = WinA[i];
+			idxA = i;
+		}
+		if (WinB[i] > bestB) {
+			bestB = WinB[i];
+			idxB = i;
+		}
+	}
+	// B=0, C=1, J=2
+	if (idxA == 0) {
+		cout << "B" << " ";
+	}
+	else if (idxA == 1) {
+		cout << "C" << " ";
+	}
+	else if (idxA == 2) {
+		cout << "J" << " ";
+	}
+	if (idxB == 0) {
+		cout << "B";
+	}
+	else if (idxB == 1) {
+		cout << "C";
+	}
+	else if (idxB == 2) {
+		cout << "J";
+	}
 
 	return 0;
 }
